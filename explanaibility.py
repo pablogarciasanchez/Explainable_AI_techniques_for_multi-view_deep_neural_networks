@@ -63,7 +63,6 @@ def overlay_heatmap_on_image_gradfr(heatmap, original_image, alpha=0.5):
     # Convertir el arreglo de NumPy de nuevo a imagen PIL y retornarlo
     return Image.fromarray(fusionada).resize((224, 224))
 
-# Funciones auxiliares
 def load_image(image_path, preprocess):
     """Carga y preprocesa una imagen."""
     image = Image.open(image_path)
@@ -161,7 +160,7 @@ def apply_smoothgrad(images, model, subfolder, image_wo_p):
     attribution = attribution.squeeze()
 
     channels = ['X', 'Y', 'Z']
-    channel_to_index = {'X': 0, 'Y': 1, 'Z': 2}  # Mapeo de canales a índices
+    channel_to_index = {'X': 0, 'Y': 1, 'Z': 2}
 
     attributions = {channel: get_attribution_channel(attribution, idx)[1] for idx, channel in enumerate(channels)}
 
@@ -176,7 +175,7 @@ def apply_smoothgrad(images, model, subfolder, image_wo_p):
 
     for (channel_name_pos, channel_data_pos), (channel_name_neg, channel_data_neg)  in zip(attributions_pos.items(),attributions_neg.items()):
 
-        i = channel_to_index[channel_name_pos]  # Obtiene el valor de i según channel_name
+        i = channel_to_index[channel_name_pos]
 
         normalized_data_pos, normalized_data_neg = normalized_2(channel_data_pos, channel_data_neg)
         heatmap_img = overlay_heatmap_on_image(normalized_data_pos, normalized_data_neg, images_wo_p[i], 0.5)
@@ -206,7 +205,7 @@ def apply_integratedgradients(images, model, subfolder, image_wo_p):
     attribution = attribution.squeeze()
 
     channels = ['X', 'Y', 'Z']
-    channel_to_index = {'X': 0, 'Y': 1, 'Z': 2}  # Mapeo de canales a índices
+    channel_to_index = {'X': 0, 'Y': 1, 'Z': 2}
 
     attributions = {channel: get_attribution_channel(attribution, idx)[1] for idx, channel in enumerate(channels)}
 
@@ -221,7 +220,7 @@ def apply_integratedgradients(images, model, subfolder, image_wo_p):
 
     for (channel_name_pos, channel_data_pos), (channel_name_neg, channel_data_neg)  in zip(attributions_pos.items(),attributions_neg.items()):
 
-        i = channel_to_index[channel_name_pos]  # Obtiene el valor de i según channel_name
+        i = channel_to_index[channel_name_pos]
 
         normalized_data_pos, normalized_data_neg = normalized_2(channel_data_pos, channel_data_neg)
         heatmap_img = overlay_heatmap_on_image(normalized_data_pos, normalized_data_neg, images_wo_p[i], 0.5)
@@ -324,8 +323,8 @@ path += entrenamiento
 print(path)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
-model.load_state_dict(torch.load(path))  # Load the parameters from the saved state_dict
-model.to(device)  # Move the model to the desired device
+model.load_state_dict(torch.load(path))  # Cargar el modelo
+model.to(device)  # Mover el modelo al dispositivo
 
 # Preprocesado de imágenes
 preprocess = transforms.Compose([
