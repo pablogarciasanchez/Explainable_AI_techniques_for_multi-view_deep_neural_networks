@@ -1,2 +1,3 @@
 # Explainable_AI_techniques_for_multi-view_deep_neural_networks
-Research focused on the development and application of multi-view explainability techniques (GradCAM, Integrated Gradients, etc..) aimed at enhancing the interpretability of a pre-trained multi-view Convolutional NeuralNetwork (MVCNN). This network was specifically designed for the estimation of age based on 3D models of the pubic symphysis.
+Repositorio del TFG del Grado de Ingeniería Informática de la Universidad de Granada.
+Por Pablo García Sánchez.
