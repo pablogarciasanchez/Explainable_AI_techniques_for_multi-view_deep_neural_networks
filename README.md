@@ -24,6 +24,11 @@ We investigate advanced explainable artificial intelligence (xAI) techniques wit
 
 ## 📂 Estructura del Repositorio
 
-El repositorio está organizado en varios directorios principales:
+El repositorio está organizado en varios ficheros principales que desempeñan las siguientes funciones:
 
-- `data_normalization/`: Obtiene la media y la desviación estándar del conjunto de entrenamiento, por canal RGB. Elabora un .txt para su posteriormente, normalizar el conjunto de datos para tener media 0 y desviación estándar 1.
+- `data_normalization.py`: Obtiene la media y la desviación estándar del conjunto de entrenamiento, por canal RGB. Elabora un .txt para su posteriormente, normalizar el conjunto de datos para tener media 0 y desviación estándar 1.
+- `ranges_of_ages.py`: Define los rangos de edad para obtener resultados MAE y RMSE.
+- `training.py`:
+  -  Entrena las arquitecturas Panorama-CNN, Resnet-CNN. [@Alexmnzlms](https://github.com/Alexmnzlms/Age_estimation_from_3D_models)
+  -  Entrena las arquitecturas Panorama-CNNEx, Resnet-CNNEx.
+  
