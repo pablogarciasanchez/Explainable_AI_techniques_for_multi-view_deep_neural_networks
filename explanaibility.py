@@ -63,7 +63,7 @@ def overlay_heatmap_on_image(heatmap_red, heatmap_blue, original_image, alpha=0.
     # Convertir el arreglo de NumPy de nuevo a imagen PIL y retornarlo
     return Image.fromarray(fusionada).resize((224, 224))
 
-def overlay_heatmap_on_image_gradcam(heatmap, original_image, alpha=0.5):
+def overlay_heatmap_on_image_gradfr(heatmap, original_image, alpha=0.5):
 
     # Cambiar el tamaño del mapa de calor para que coincida con el de la imagen original
     heatmap_resized = cv2.resize(heatmap, (original_image.width, original_image.height))
@@ -138,6 +138,10 @@ def normalized_2(channel_data1, channel_data2):
     maximo = np.max(np.concatenate((channel_data1, channel_data2)))
     minimo = np.min(np.concatenate((channel_data1, channel_data2)))
 
+    # Verificar si maximo y minimo son iguales
+    if maximo == minimo:
+        return np.zeros_like(channel_data1, dtype=np.uint8), np.zeros_like(channel_data2, dtype=np.uint8)
+
     # Normalizar el canal de datos usando los valores mínimos y máximos encontrados
     norm_data_pos = 255 * ((channel_data1 - minimo) / (maximo - minimo))
     norm_data_pos = norm_data_pos.astype(np.uint8)
@@ -145,8 +149,13 @@ def normalized_2(channel_data1, channel_data2):
     # Normalizar el canal de datos usando los valores mínimos y máximos encontrados
     norm_data_neg = 255 * ((channel_data2 - minimo) / (maximo - minimo))
     norm_data_neg = norm_data_neg.astype(np.uint8)
-    
+
     return norm_data_pos, norm_data_neg
+
+def separate_attributions(attr):
+    positive_attr = np.maximum(0, attr)
+    negative_attr = np.abs(np.minimum(0, attr))
+    return positive_attr, negative_attr
 
 def apply_smoothgrad(images, model, subfolder, image_wo_p):
     ig = IntegratedGradients(model)
@@ -181,15 +190,10 @@ def apply_smoothgrad(images, model, subfolder, image_wo_p):
         save_heatmap(output_dir, subfolder, f'Smoothgrad_cnn{channel_name_pos}.png', normalized_data)
         heatmap_img.save(os.path.join(output_dir, subfolder,f'Smoothgrad_{channel_name_pos}_heatmap.png'))
 
-def separate_attributions(attr):
-    positive_attr = np.maximum(0, attr)
-    negative_attr = np.abs(np.minimum(0, attr))
-    return positive_attr, negative_attr
-
 def apply_integratedgradients(images, model, subfolder, image_wo_p):
     ig = IntegratedGradients(model)
 
-    attribution,delta = ig.attribute(inputs= images, return_convergence_delta=True,n_steps=200)
+    attribution, delta = ig.attribute(inputs= images, return_convergence_delta=True,n_steps=200)
         
     attribution = attribution.squeeze()
 
@@ -217,34 +221,55 @@ def apply_integratedgradients(images, model, subfolder, image_wo_p):
         save_heatmap(output_dir, subfolder, f'IntegratedGradients_cnn{channel_name_pos}.png', normalized_data)
         heatmap_img.save(os.path.join(output_dir, subfolder,f'IntegratedGradients_{channel_name_pos}_heatmap.png'))
 
-def get_gradcam(images, target_layer, model):
-    """Genera Grad-CAM atribuciones para imágenes."""
+def apply_gradfr(images, model, is_panorama, is_explainable, subfolder, image_wo_p):
+    '''
+    Aplica GradfR (Gradients for Regression) a una serie de imágenes usando un modelo dado.
+
+    Parámetros
+    ----------
+    images : tensor
+        Tensor que contiene las imágenes a las que se les aplicará Grad-CAM.
+    model : torch.nn.Module
+        Modelo de red neuronal convolucional preentrenado.
+    is_panorama : bool
+    is_explaianable: bool
+        Dependiendo, del valor de ambas se selecciona una capa u otra.
+    subfolder : str
+        Nombre del subdirectorio donde se guardarán las imágenes resultantes.
+    image_wo_p : list
+        Lista de imágenes originales sin proceso para la superposición del mapa de calor.
+    '''
+    def get_gradfr(images, target_layer, model):
     
-    model.zero_grad()
-    grad_cam = LayerGradCam(model, target_layer)
-    
-    attributions = grad_cam.attribute(images, relu_attributions= False)
+        model.zero_grad()
+        grad_cam = LayerGradCam(model, target_layer)
+        
+        attributions = grad_cam.attribute(images, relu_attributions= False)
 
-    attributions = torch.abs(attributions)
+        attributions = torch.abs(attributions)
 
-    return attributions
+        return attributions
 
-def apply_gradcam(images, model, is_panorama, subfolder, image_wo_p):
     cnn_names = ["cnnX", "cnnY", "cnnZ"]
     for i, cnn in enumerate(cnn_names):
-        if is_panorama:
-            target_layer = model.__getattr__(cnn)[-10]
+        if is_explainable:
+            if is_panorama:
+                target_layer = model.__getattr__(cnn)[-10]
+            else:
+                target_layer = model.__getattr__(cnn)[0][-1][-1].conv3
         else:
-            target_layer = model.__getattr__(cnn)[0][-1][-1].conv3
+            if is_panorama:
+                target_layer = model.__getattr__(cnn)[-12]
+                print(target_layer)
+            else:
+                target_layer = model.__getattr__(cnn)[0][-1][-1].conv3
 
-        #print(target_layer)
-        attributions = get_gradcam(images, target_layer, model)
+        attributions = get_gradfr(images, target_layer, model)
         
         attributions = attributions.squeeze(0, 1).detach().cpu().numpy()
         
-        # Normalizar el canal de datos usando los valores mínimos y máximos encontrados
         normalized_data = normalized(attributions)
-        heatmap_img = overlay_heatmap_on_image_gradcam(normalized_data, image_wo_p[i], 0.4)
+        heatmap_img = overlay_heatmap_on_image_gradfr(normalized_data, image_wo_p[i], 0.4)
         save_heatmap(output_dir, subfolder, f'GradCam_{cnn}.png', normalized_data)
         heatmap_img.save(os.path.join(output_dir, subfolder,f'GradCam_{cnn}_heatmap.png'))
 
@@ -321,7 +346,10 @@ for subfolder in image_dir[0:1]:
         
         with torch.no_grad():
             predicted_age = model(images).item()
-            x_saliency_value = model.view_saliency_layer.output
+            if(Explainable):
+                x_saliency_value = model.view_saliency_layer.output
+            else:
+                x_saliency_value =  torch.tensor([[0.0, 0.0, 0.0]], device='cuda:0')
 
         predicted_ages_dict[subfolder] = predicted_age
         x_saliency_list = x_saliency_value.tolist()
@@ -329,11 +357,11 @@ for subfolder in image_dir[0:1]:
 
         images.requires_grad = True
 
-        apply_gradcam(images,model, PANORAMACNN, subfolder, images_wo_p)
+        apply_gradfr(images,model, PANORAMACNN, Explainable, subfolder, images_wo_p)
 
         apply_integratedgradients(images,model, subfolder, images_wo_p)
 
-        apply_smoothgrad(images, model, subfolder, images_wo_p)
+        #apply_smoothgrad(images, model, subfolder, images_wo_p)
 
 # Resultados a DataFrame
 new_df['Edad_predicha'] = new_df['Sample'].map(predicted_ages_dict)
