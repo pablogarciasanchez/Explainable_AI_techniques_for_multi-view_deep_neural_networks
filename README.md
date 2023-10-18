@@ -21,3 +21,9 @@ We investigate advanced explainable artificial intelligence (xAI) techniques wit
 
 - Python 3.10.12
 - Pytorch 2.0.1
+
+## 📂 Estructura del Repositorio
+
+El repositorio está organizado en varios directorios principales:
+
+- `data_normalization/`: Obtiene la media y la desviación estándar del conjunto de entrenamiento, por canal RGB. Elabora un .txt para su posteriormente, normalizar el conjunto de datos para tener media 0 y desviación estándar 1.
