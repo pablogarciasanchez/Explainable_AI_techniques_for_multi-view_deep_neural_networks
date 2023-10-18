@@ -19,4 +19,5 @@ We investigate advanced explainable artificial intelligence (xAI) techniques wit
 
 ## 🛠 Herramientas y Tecnologías Utilizadas
 
-- Lista de herramientas, lenguajes, bibliotecas, etc.
+- Python 3.10.12
+- Pytorch 2.0.1
