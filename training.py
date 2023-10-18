@@ -10,7 +10,6 @@ from utils import CustomImageDataset
 import numpy as np
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
-from torchinfo import summary
 import torchvision.models as models
 import functions as fn
 import sys
