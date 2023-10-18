@@ -28,7 +28,13 @@ El repositorio está organizado en varios ficheros principales que desempeñan l
 
 - `data_normalization.py`: Obtiene la media y la desviación estándar del conjunto de entrenamiento, por canal RGB. Elabora un .txt para su posteriormente, normalizar el conjunto de datos para tener media 0 y desviación estándar 1.
 - `ranges_of_ages.py`: Define los rangos de edad para obtener resultados MAE y RMSE.
-- `training.py`:
-  -  Entrena las arquitecturas Panorama-CNN, Resnet-CNN. [@Alexmnzlms](https://github.com/Alexmnzlms/Age_estimation_from_3D_models)
-  -  Entrena las arquitecturas Panorama-CNNEx, Resnet-CNNEx.
+- `training.py`: Entrena las principales arquitecturas:
+  -  Panorama-CNN
+  -  Resnet-CNN
+  -  Panorama-CNNEx
+  -  Resnet-CNNEx
+  ```bash
+  training.py [PANORAMACNN:True/False] [Explainable:True/False]
+ 
+[@Alexmnzlms](https://github.com/Alexmnzlms/Age_estimation_from_3D_models)
   
