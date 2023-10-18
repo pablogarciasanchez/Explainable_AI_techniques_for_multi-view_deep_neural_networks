@@ -56,4 +56,4 @@ Este repositorio consta de varios ficheros principales, cada uno con funciones e
  - **Resultado**: carpeta generada `heatmap[NombreArquitecura/` con los mapas de relevancia 2D asociados a cada ejemplo y mapas de calor (224x224) desplegados sobre imágenes del hueso.
  - **Uso**:
   ```bash
-  explanaibility.py [PANORAMACNN:True/False] [Explainable:True/False]
+  explanaibility.py [PANORAMACNN:True/False] [Explainable:True/False] [entrenamiento]
