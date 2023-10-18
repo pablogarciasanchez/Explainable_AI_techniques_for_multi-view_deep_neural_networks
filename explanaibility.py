@@ -1,24 +1,20 @@
 import os
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import cv2
+from PIL import Image
 
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.transforms import ToTensor, ToPILImage
-from PIL import Image, ImageDraw, ImageFont
-from captum.attr import LayerGradCam, LayerAttribution, visualization as viz
+
 from matplotlib.colors import LinearSegmentedColormap
 import functions as fn
-import cv2
-from torchinfo import summary
 import sys
-from captum.attr import IntegratedGradients
-from captum.attr import NoiseTunnel
-from captum.attr import Saliency
-from captum.attr import LayerActivation
+from captum.attr import IntegratedGradients, LayerGradCam, NoiseTunnel
+
 sys.stdout.reconfigure(encoding='utf-8')
 
 from utils import PanoramaCNN, ResnetCNN, PanoramaCNNEx, ResnetCNNEx, CustomImageDataset
