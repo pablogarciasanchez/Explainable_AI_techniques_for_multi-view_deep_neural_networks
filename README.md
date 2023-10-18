@@ -35,6 +35,10 @@ El repositorio está organizado en varios ficheros principales que desempeñan l
   -  Resnet-CNNEx
   ```bash
   training.py [PANORAMACNN:True/False] [Explainable:True/False]
+- `utils.py`:
+  - Define el Dataset para cargar las imágenes en memoria normalizadas
+  - Define las capas VS y PS R. Song, Y. Liu, and P. L. Rosin. "[Mesh Saliency via Weakly Supervised Classification-for-Saliency CNN](https://doi.org/10.1109/TVCG.2019.2928794)." *IEEE Transactions on Visualization and Computer Graphics*, vol. 27, no. 1, pp. 151-164, 1 Jan. 2021.
+  - Define las arquitecturas de Panorama-CNN, Resnet-CNN, Panorama-CNNEx y Resnet-CNNEx
  
 [@Alexmnzlms](https://github.com/Alexmnzlms/Age_estimation_from_3D_models)
   
