@@ -87,8 +87,6 @@ def overlay_heatmap_on_image_gradcam(heatmap, original_image, alpha=0.5):
 def load_image(image_path, preprocess):
     """Carga y preprocesa una imagen."""
     image = Image.open(image_path)
-    # Dividir la imagen en canales
-    #r, g, b = image.split()
 
     gray_image = image.convert('L')
 
@@ -132,8 +130,6 @@ def normalized(channel_data):
         norm_data = 255 * (channel_data - channel_data.min()) / (channel_data.max() - channel_data.min())
         norm_data = norm_data.astype(np.uint8)
     else:
-        # Si max es igual a min, entonces todos los valores en channel_data son iguales.
-        # Puedes decidir cómo manejar este caso. Una opción es simplemente asignar cero a todo:
         norm_data = np.zeros_like(channel_data, dtype=np.uint8)
     return norm_data
 
@@ -181,13 +177,13 @@ def apply_smoothgrad(images, model, subfolder, image_wo_p):
 
         normalized_data_pos, normalized_data_neg = normalized_2(channel_data_pos, channel_data_neg)
         heatmap_img = overlay_heatmap_on_image(normalized_data_pos, normalized_data_neg, images_wo_p[i], 0.5)
-        normalized_data = np.clip(normalized_data_pos + normalized_data_neg + 100, 0, 255)
+        normalized_data = normalized_data_pos + normalized_data_neg
         save_heatmap(output_dir, subfolder, f'Smoothgrad_cnn{channel_name_pos}.png', normalized_data)
         heatmap_img.save(os.path.join(output_dir, subfolder,f'Smoothgrad_{channel_name_pos}_heatmap.png'))
 
 def separate_attributions(attr):
-    positive_attr = np.maximum(0, attr)  # Mantén solo los valores positivos
-    negative_attr = np.abs(np.minimum(0, attr))  # Toma el valor absoluto de los valores negativos
+    positive_attr = np.maximum(0, attr)
+    negative_attr = np.abs(np.minimum(0, attr))
     return positive_attr, negative_attr
 
 def apply_integratedgradients(images, model, subfolder, image_wo_p):
@@ -217,7 +213,7 @@ def apply_integratedgradients(images, model, subfolder, image_wo_p):
 
         normalized_data_pos, normalized_data_neg = normalized_2(channel_data_pos, channel_data_neg)
         heatmap_img = overlay_heatmap_on_image(normalized_data_pos, normalized_data_neg, images_wo_p[i], 0.5)
-        normalized_data = np.clip(normalized_data_pos + normalized_data_neg + 100, 0, 255)
+        normalized_data = normalized_data_pos + normalized_data_neg
         save_heatmap(output_dir, subfolder, f'IntegratedGradients_cnn{channel_name_pos}.png', normalized_data)
         heatmap_img.save(os.path.join(output_dir, subfolder,f'IntegratedGradients_{channel_name_pos}_heatmap.png'))
 
@@ -314,7 +310,7 @@ new_df = df[['Sample', 'Edad']].copy()
 predicted_ages_dict = {}
 saliency_values_dict = {}
 
-for subfolder in image_dir:
+for subfolder in image_dir[0:1]:
 
     print(f"Procesando {subfolder}...")
 
@@ -333,11 +329,11 @@ for subfolder in image_dir:
 
         images.requires_grad = True
 
-        apply_smoothgrad(images, model, subfolder, images_wo_p)
+        apply_gradcam(images,model, PANORAMACNN, subfolder, images_wo_p)
 
         apply_integratedgradients(images,model, subfolder, images_wo_p)
 
-        apply_gradcam(images,model, PANORAMACNN, subfolder, images_wo_p)
+        apply_smoothgrad(images, model, subfolder, images_wo_p)
 
 # Resultados a DataFrame
 new_df['Edad_predicha'] = new_df['Sample'].map(predicted_ages_dict)
