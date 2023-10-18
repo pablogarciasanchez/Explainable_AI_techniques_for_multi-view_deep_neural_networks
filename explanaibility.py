@@ -5,12 +5,9 @@ import cv2
 from PIL import Image
 
 import torch
-import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from torchvision.transforms import ToTensor, ToPILImage
 
-from matplotlib.colors import LinearSegmentedColormap
 import functions as fn
 import sys
 from captum.attr import IntegratedGradients, LayerGradCam, NoiseTunnel
@@ -18,19 +15,6 @@ from captum.attr import IntegratedGradients, LayerGradCam, NoiseTunnel
 sys.stdout.reconfigure(encoding='utf-8')
 
 from utils import PanoramaCNN, ResnetCNN, PanoramaCNNEx, ResnetCNNEx, CustomImageDataset
-
-def custom_color_map(value):
-    if value >= 0:
-        return (255, 255 - int(255 * value), 255 - int(255 * value))  # Interpolación entre blanco y rojo
-    else:
-        return (255 + int(255 * value), 255 + int(255 * value), 255)  # Interpolación entre blanco y azul
-
-def apply_color_map_to_data(data):
-    colored_data = np.zeros((data.shape[0], data.shape[1], 3), dtype=np.uint8)
-    for i in range(data.shape[0]):
-        for j in range(data.shape[1]):
-            colored_data[i, j] = custom_color_map(data[i, j])
-    return colored_data
 
 def overlay_heatmap_on_image(heatmap_red, heatmap_blue, original_image, alpha=0.5):
     
@@ -154,6 +138,20 @@ def separate_attributions(attr):
     return positive_attr, negative_attr
 
 def apply_smoothgrad(images, model, subfolder, image_wo_p):
+    '''
+    Aplica Smoothgrad al modelo
+
+    Parámetros
+    ----------
+    images : tensor
+        Tensor que contiene las imágenes de entrada (Vistas X,Y,Z)
+    model : torch.nn.Module
+        Modelo MVCNN preentrenado.
+    subfolder : str
+        Nombre del subdirectorio donde se guardarán las imágenes resultantes.
+    image_wo_p : list
+        Lista de imágenes originales del hueso para la superposición del mapa de calor.
+    '''
     ig = IntegratedGradients(model)
 
     noise_tunnel = NoiseTunnel(ig)
@@ -187,6 +185,20 @@ def apply_smoothgrad(images, model, subfolder, image_wo_p):
         heatmap_img.save(os.path.join(output_dir, subfolder,f'Smoothgrad_{channel_name_pos}_heatmap.png'))
 
 def apply_integratedgradients(images, model, subfolder, image_wo_p):
+    '''
+    Aplica Integrates Gradients al modelo
+
+    Parámetros
+    ----------
+    images : tensor
+        Tensor que contiene las imágenes de entrada (Vistas X,Y,Z)
+    model : torch.nn.Module
+        Modelo MVCNN preentrenado.
+    subfolder : str
+        Nombre del subdirectorio donde se guardarán las imágenes resultantes.
+    image_wo_p : list
+        Lista de imágenes originales del hueso para la superposición del mapa de calor.
+    '''
     ig = IntegratedGradients(model)
 
     attribution, delta = ig.attribute(inputs= images, return_convergence_delta=True,n_steps=200)
@@ -219,21 +231,21 @@ def apply_integratedgradients(images, model, subfolder, image_wo_p):
 
 def apply_gradfr(images, model, is_panorama, is_explainable, subfolder, image_wo_p):
     '''
-    Aplica GradfR (Gradients for Regression) a una serie de imágenes usando un modelo dado.
+    Aplica GradfR (Gradients for Regression) al modelo
 
     Parámetros
     ----------
     images : tensor
-        Tensor que contiene las imágenes a las que se les aplicará Grad-CAM.
+        Tensor que contiene las imágenes de entrada (Vistas X,Y,Z)
     model : torch.nn.Module
-        Modelo de red neuronal convolucional preentrenado.
+        MVCNN preentrenado
     is_panorama : bool
     is_explaianable: bool
         Dependiendo, del valor de ambas se selecciona una capa u otra.
     subfolder : str
         Nombre del subdirectorio donde se guardarán las imágenes resultantes.
     image_wo_p : list
-        Lista de imágenes originales sin proceso para la superposición del mapa de calor.
+        Lista de imágenes originales del hueso para la superposición del mapa de calor.
     '''
     def get_gradfr(images, target_layer, model):
     
@@ -357,7 +369,7 @@ for subfolder in image_dir[0:1]:
 
         apply_integratedgradients(images,model, subfolder, images_wo_p)
 
-        #apply_smoothgrad(images, model, subfolder, images_wo_p)
+        apply_smoothgrad(images, model, subfolder, images_wo_p)
 
 # Resultados a DataFrame
 new_df['Edad_predicha'] = new_df['Sample'].map(predicted_ages_dict)
