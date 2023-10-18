@@ -143,12 +143,12 @@ class ResnetCNN(nn.Module):
             for param in resnet.parameters():
                 param.requires_grad = False
 
-        # Remove the last (classification) layer of ResNet-50
+        # Eliminar la última capa de ResNet-50
         modules = list(resnet.children())[:-2]
 
         self.resnet = nn.Sequential(*modules)
 
-        # Add the new layers on top of the resnet
+        # Añadir el resto de capas a ResNet-50
         model = nn.Sequential(
             self.resnet,
             nn.Flatten(),
@@ -163,6 +163,8 @@ class ResnetCNN(nn.Module):
         return model
 
     def forward(self, x):
+
+        # Pasar cada vista a través de su propia CNN
         xs = []
         xs.append(self.cnnX(x[:, 0]))
         xs.append(self.cnnY(x[:, 1]))
@@ -171,7 +173,7 @@ class ResnetCNN(nn.Module):
         x = torch.stack(xs, dim=2)
         x = torch.mean(x, dim=2)
         return x
- 
+
 class ViewSaliencyFunction(Function):
 
     @staticmethod
@@ -262,7 +264,7 @@ class SaliencyBasedPoolingLayer(nn.Module):
         return SaliencyBasedPoolingFunction.apply(output_relu, output_vs)
     
 def hook_fn(module, input, output):
-    # This will capture the output of the view_saliency_layer
+    # Para capturar la salida de view_saliency_layer
     module.output = output
     
 class PanoramaCNNEx(nn.Module):
@@ -362,7 +364,7 @@ class ResnetCNNEx(nn.Module):
             for param in resnet.parameters():
                 param.requires_grad = False
 
-        # Remove the last (classification) layer of ResNet-50
+        # Eliminar la última capa de Resnet-50
         modules = list(resnet.children())[:-2]
 
         self.resnet = nn.Sequential(*modules)
