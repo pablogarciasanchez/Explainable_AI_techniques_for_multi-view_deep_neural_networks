@@ -18,7 +18,7 @@ from utils import PanoramaCNN, ResnetCNN, PanoramaCNNEx, ResnetCNNEx, CustomImag
 
 def overlay_heatmap_on_image(heatmap_red, heatmap_blue, original_image, alpha=0.5):
     '''Superpone el mapa JET de openCV sobre la imagen original del hueso'''
-    
+
     # Cambiar el tamaño de los mapas de calor para que coincidan con el de la imagen original
     heatmap_red_resized = cv2.resize(heatmap_red, (original_image.width, original_image.height))
     heatmap_blue_resized = cv2.resize(heatmap_blue, (original_image.width, original_image.height))
@@ -41,7 +41,7 @@ def overlay_heatmap_on_image(heatmap_red, heatmap_blue, original_image, alpha=0.
     # Fusionar el mapa de calor combinado y la imagen original
     fusionada = cv2.addWeighted(original_rgb, 1 - alpha, combined_heatmap, alpha, 0)
 
-    # Convertir el arreglo de NumPy de nuevo a imagen PIL y retornarlo
+    # Convertir el arreglo de NumPy de nuevo a imagen PIL y devolverlo
     return Image.fromarray(fusionada).resize((224, 224))
 
 def overlay_heatmap_on_image_gradfr(heatmap, original_image, alpha=0.5):
@@ -62,7 +62,7 @@ def overlay_heatmap_on_image_gradfr(heatmap, original_image, alpha=0.5):
     # Fusionar el mapa de calor y la imagen original
     fusionada = cv2.addWeighted(original_rgb, 1 - alpha, heatmap_colored_rgb, alpha, 0)
 
-    # Convertir el arreglo de NumPy de nuevo a imagen PIL y retornarlo
+    # Convertir el arreglo de NumPy de nuevo a imagen PIL y devolverlo
     return Image.fromarray(fusionada).resize((224, 224))
 
 def load_image(image_path, preprocess):
@@ -269,7 +269,6 @@ def apply_gradfr(images, model, is_panorama, is_explainable, subfolder, image_wo
         else:
             if is_panorama:
                 target_layer = model.__getattr__(cnn)[-12]
-                print(target_layer)
             else:
                 target_layer = model.__getattr__(cnn)[0][-1][-1].conv3
 
