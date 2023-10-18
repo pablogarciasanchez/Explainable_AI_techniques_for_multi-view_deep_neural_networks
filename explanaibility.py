@@ -17,6 +17,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 from utils import PanoramaCNN, ResnetCNN, PanoramaCNNEx, ResnetCNNEx, CustomImageDataset
 
 def overlay_heatmap_on_image(heatmap_red, heatmap_blue, original_image, alpha=0.5):
+    '''Superpone el mapa JET de openCV sobre la imagen original del hueso'''
     
     # Cambiar el tamaño de los mapas de calor para que coincidan con el de la imagen original
     heatmap_red_resized = cv2.resize(heatmap_red, (original_image.width, original_image.height))
@@ -44,6 +45,7 @@ def overlay_heatmap_on_image(heatmap_red, heatmap_blue, original_image, alpha=0.
     return Image.fromarray(fusionada).resize((224, 224))
 
 def overlay_heatmap_on_image_gradfr(heatmap, original_image, alpha=0.5):
+    '''Superpone el mapa azul/rojo sobre la imagen original del hueso'''
 
     # Cambiar el tamaño del mapa de calor para que coincida con el de la imagen original
     heatmap_resized = cv2.resize(heatmap, (original_image.width, original_image.height))
