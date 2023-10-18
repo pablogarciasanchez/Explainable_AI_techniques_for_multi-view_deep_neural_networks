@@ -11,10 +11,11 @@ Técnicas de explicabilidad para redes neuronales profundas en el contexto de ap
 
 ### Resumen
 
-Investigamos técnicas avanzadas de explicabilidad en inteligencia artificial (xIA) con el propósito de potenciar la comprensión y transparencia de las redes neuronales convolucionales (CNN) dentro del ámbito del aprendizaje multivista. Esta investigación emplea una CNN multivista diseñada para estimar la edad a partir de proyecciones de modelos 3D de la sínfisis púbica. El objetivo principal es extender y mejorar su capacidad explicativa, proporcionando intuiciones más profundas sobre su funcionamiento y decisiones.
+Investigamos técnicas avanzadas de explicabilidad en inteligencia artificial (xIA) con el propósito de potenciar la comprensión y transparencia de las redes neuronales convolucionales (CNN) dentro del ámbito del aprendizaje multivista. Esta investigación emplea una CNN multivista diseñada para estimar la edad a partir de proyecciones de modelos tridimensionales de la sínfisis púbica. El objetivo principal es extender y mejorar su capacidad explicativa, proporcionando intuiciones más profundas sobre su funcionamiento y decisiones.
 
 ### Abstract
-*(Inserta tu resumen en inglés aquí.)*
+
+We investigate advanced explainable artificial intelligence (xAI) techniques with the aim of enhancing the understanding and transparency of convolutional neural networks (CNNs) within the multi-view learning context. This research employs a multi-view CNN designed to estimate age from projections of three-dimensional models of the pubic symphysis. The primary goal is to expand and enhance its explanatory capacity, offering deeper insights into its operation and decision-making
 
 ## 🛠 Herramientas y Tecnologías Utilizadas
 
