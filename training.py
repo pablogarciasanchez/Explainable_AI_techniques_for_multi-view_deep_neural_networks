@@ -12,7 +12,6 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from torchinfo import summary
 import torchvision.models as models
-from torch.optim.lr_scheduler import MultiStepLR
 import functions as fn
 import sys
 import random
@@ -20,16 +19,12 @@ import pickle
 import datetime
 sys.stdout.reconfigure(encoding='utf-8')
 
-# Estructura [batch,vistas,rgb,altura,anchura]
-
 def weighted_l1_loss(input, target, weight):
-    # Calcula el error absoluto entre input y target sin reducirlo (obtiene un error por elemento)
+    
     loss_per_element = torch.abs(input - target)
     
-    # Calcula la media del error absoluto por muestra (a lo largo de la dimensión 1 si hay más dimensiones)
     mean_loss_per_sample = torch.mean(loss_per_element, dim=1, keepdim=True)
     
-    # Pondera la pérdida media con el peso proporcionado
     weighted_loss = mean_loss_per_sample * weight
     
     return weighted_loss
@@ -70,7 +65,7 @@ def create_modelEx(device, is_panorama, path, lr):
     return model, criterion, optimizer
 
 def create_dataloaders(batch_sizes,mean_train,std_train):
-    # cargar datos
+    # Cargar datos
     print("Cargando conjuntos de datos...")
     training_data = CustomImageDataset("train.csv", "data_img", mean_train, std_train, True)
     print("Cargado Conjunto de entrenamiento")
@@ -105,7 +100,8 @@ def plot_mae_from_file(filename, path):
     plt.savefig(path + "_plot.png")
 
 def train_model(model, dataloaders, criterion, optimizer, device, path, num_epochs=25, fine_tune_epochs=25, lr=0.001):
-    # parámetros para detener el entrenamiento temprano
+    
+    # Parámetros para detener el entrenamiento temprano
     n_epochs_stop = 20
     epochs_no_improve = 0
     min_val_loss = np.Inf
@@ -128,7 +124,6 @@ def train_model(model, dataloaders, criterion, optimizer, device, path, num_epoc
         for i, data in enumerate(dataloaders[phase], 0): # 'phase' es 'train' o 'val'
             features, labels = data[0].to(device), data[1].to(device)
             
-            # Solo accede a los pesos si estás en la fase de entrenamiento
             if phase == 'train':
                 weights = data[2].to(device)
             else:
@@ -139,7 +134,6 @@ def train_model(model, dataloaders, criterion, optimizer, device, path, num_epoc
             outputs = model(features)
             labels = labels.view(-1, 1)
             
-            # Si hay pesos, úsalos para calcular la pérdida; de lo contrario, usa la pérdida regular
             if weights is not None:
                 loss = weighted_l1_loss(outputs, labels, weights).mean()
                 mae_loss = criterion(outputs, labels).mean()
@@ -158,7 +152,8 @@ def train_model(model, dataloaders, criterion, optimizer, device, path, num_epoc
         return running_loss / len(dataloaders[phase]), mae_train_loss / len(dataloaders[phase])
 
     # Durante el entrenamiento, registrar la pérdida de entrenamiento y validación
-    for epoch in range(num_epochs + fine_tune_epochs):
+    epoch = 0
+    while epoch < (num_epochs + fine_tune_epochs):
         print(f"Epoch {epoch}/{num_epochs + fine_tune_epochs - 1}")
         print('-' * 10)
 
@@ -182,18 +177,23 @@ def train_model(model, dataloaders, criterion, optimizer, device, path, num_epoc
             epochs_no_improve += 1
             if epochs_no_improve == n_epochs_stop:
                 print('Early stopping!')
-                break
+                if(epoch < num_epochs - 1):
+                    epoch = num_epochs - 1
+                    epochs_no_improve = 0
+                else:
+                    break
 
         # Comprobar si es el momento de comenzar con el ajuste fino
         if epoch == num_epochs - 1:
             print('Starting fine-tuning...')
+            epochs_no_improve = 0
             for param in model.parameters():
                 param.requires_grad = True
             optimizer = Adam(model.parameters(), lr=lr/100)
+        epoch += 1
 
     print('Training complete')
 
-    # Asumiendo que ya tienes training_mae_list y validation_mae_list definidos
     with open(path + 'mae_data.pkl', 'wb') as f:
         pickle.dump({
             'training_mae': training_mae_list,
@@ -217,30 +217,31 @@ def test_model(model, dataloader, device):
             pred.extend(outputs.cpu().numpy().flatten().tolist())
     return np.array(true), np.array(pred)
 
-def main():
-    #PARAMETROS:
-    PANORAMACNN = False
-    Explainable = True
+def str_to_bool(s):
+    if s == 'True':
+        return True
+    elif s == 'False':
+        return False
+    else:
+        raise ValueError(f"Se esperaba 'True' o 'False', pero se recibió: {s}")
 
-    '''
-    # Establecer la semilla para PyTorch (para tensores y operaciones relacionadas con PyTorch)
-    seed = 1234
-    torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
+def main(PANORAMACNN, Explainable):
+    
+    modelo_str = 'Modelo: '
+    
+    if PANORAMACNN:
+        modelo_str += 'Panorama-CNN'
+    else:
+        modelo_str += 'Resnet-CNN'
 
-    # Establecer la semilla para NumPy (para operaciones relacionadas con NumPy)
-    np.random.seed(seed)
+    if Explainable:
+        modelo_str += 'Ex'
 
-    # Establecer la semilla para random (para otras operaciones aleatorias)
-    random.seed(seed)
-    '''
+    with open('valores_mean_std.txt', 'r') as f:
+        lines = f.readlines()
 
-    # Definir las medias y desviaciones estándar de los datos de entrenamiento
-    mean_train = [0.09538473933935165, 0.06967461854219437, 0.04578746110200882]
-    std_train = [0.20621216297149658, 0.15044525265693665, 0.088300921022892]
+    mean_train = [float(value) for value in lines[0].strip().split(',')]
+    std_train = [float(value) for value in lines[1].strip().split(',')]
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -248,6 +249,7 @@ def main():
         path = './entrenamientos/PanoramaCNNEx/' if PANORAMACNN else './entrenamientos/ResnetCNNEx/'
     else:
         path = './entrenamientos/PanoramaCNN/' if PANORAMACNN else './entrenamientos/ResnetCNN/'
+
     # Obtener la fecha y hora actuales
     current_datetime = datetime.datetime.now()
 
@@ -264,17 +266,15 @@ def main():
         else:
             model, criterion, optimizer = create_model(device, PANORAMACNN, path, lr)
         
-        #summary(model, input_size=(32, 3, 3, 108, 36))
         dataloaders = create_dataloaders({'train': 32, 'val': 32, 'test': 1}, mean_train, std_train)
-        model = train_model(model, dataloaders, criterion, optimizer, device, path, num_epochs=100, fine_tune_epochs = 0, lr = lr)
-    else: # Para el caso de ResNet
+        model = train_model(model, dataloaders, criterion, optimizer, device, path, num_epochs=2, fine_tune_epochs = 0, lr = lr)
+    else:
         lr = 0.001
         if(Explainable):
             model, criterion, optimizer = create_modelEx(device, PANORAMACNN, path, lr)
         else:
             model, criterion, optimizer = create_model(device, PANORAMACNN, path, lr)
         
-        #summary(model, input_size=(1, 3, 3, 108, 36))
         dataloaders = create_dataloaders({'train': 32, 'val': 32, 'test': 1},mean_train,std_train)
         model = train_model(model, dataloaders, criterion, optimizer, device, path, num_epochs=100, fine_tune_epochs=100, lr=lr)
 
@@ -284,4 +284,11 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
+    if len(sys.argv) != 3:
+        print("Uso: training.py [PANORAMACNN] [Explainable]")
+        sys.exit(1)
+
+    PANORAMACNN_bool = str_to_bool(sys.argv[1])
+    Explainable_bool = str_to_bool(sys.argv[2])
+    
+    main(PANORAMACNN_bool, Explainable_bool)
