@@ -21,6 +21,7 @@ We investigate advanced explainable artificial intelligence (xAI) techniques wit
 
 - Python 3.10.12
 - Pytorch 2.0.1
+- Captum 0.6.0
  
 ## 📂 Estructura del Repositorio
 
