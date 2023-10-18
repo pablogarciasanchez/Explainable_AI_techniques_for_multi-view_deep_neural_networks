@@ -42,7 +42,7 @@ Este repositorio consta de varios ficheros principales, cada uno con funciones e
   - Panorama-CNNEx
   - Resnet-CNNEx
   
-  **Uso**:
+- **Uso**:
   ```bash
   training.py [PANORAMACNN:True/False] [Explainable:True/False]
 
@@ -51,3 +51,9 @@ Este repositorio consta de varios ficheros principales, cada uno con funciones e
   - Define el Dataset: Permite cargar las imágenes en memoria normalizadas para que la media sea 0 y la desviación estándar 1
   - Define las capas PS y VS: Define las capas VS y PS, basado en: R. Song, Y. Liu, and P. L. Rosin. "[Mesh Saliency via Weakly Supervised Classification-for-Saliency CNN](https://doi.org/10.1109/TVCG.2019.2928794)." *IEEE Transactions on Visualization and Computer Graphics*, vol. 27, no. 1, pp. 151-164, 1 Jan. 2021.
   - Define las arquitecturas Panorama-CNN, Panorama-CNNEx, Resnet-CNN y Resnet-CNNEx.
+### `explainability.py`
+ - **Función**: Aplica GradfR, Integrated Gradients y Smoothgrad a las diferentes arquitecturas
+ - **Resultado**: carpeta generada `heatmap[NombreArquitecura/` con los mapas de relevancia 2D asociados a cada ejemplo y mapas de calor (224x224) desplegados sobre imágenes del hueso.
+ - **Uso**:
+  ```bash
+  explanaibility.py [PANORAMACNN:True/False] [Explainable:True/False]
