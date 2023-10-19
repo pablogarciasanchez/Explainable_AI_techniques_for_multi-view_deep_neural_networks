@@ -60,4 +60,4 @@ Este repositorio consta de varios ficheros principales, cada uno con funciones e
    explanaibility.py [PANORAMACNN:True/False] [Explainable:True/False] [entrenamiento]
 
 ### `functions.py`
-
+ - **Función**: Funciones auxiliares para mostrar resultados, basadas en [functions.py](https://github.com/Alexmnzlms/Age_estimation_from_3D_models/blob/main/src/functions.py)
