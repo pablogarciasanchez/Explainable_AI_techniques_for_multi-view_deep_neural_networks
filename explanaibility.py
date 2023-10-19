@@ -181,7 +181,7 @@ def apply_smoothgrad(images, model, subfolder, image_wo_p):
 
         normalized_data_pos, normalized_data_neg = normalized_2(channel_data_pos, channel_data_neg)
         heatmap_img = overlay_heatmap_on_image(normalized_data_pos, normalized_data_neg, images_wo_p[i], 0.5)
-        normalized_data = normalized_data_pos + normalized_data_neg
+        normalized_data = np.clip((normalized_data_pos + normalized_data_neg)*1.2, 0, 255)
         save_heatmap(output_dir, subfolder, f'Smoothgrad_cnn{channel_name_pos}.png', normalized_data)
         heatmap_img.save(os.path.join(output_dir, subfolder,f'Smoothgrad_{channel_name_pos}_heatmap.png'))
 
@@ -226,7 +226,7 @@ def apply_integratedgradients(images, model, subfolder, image_wo_p):
 
         normalized_data_pos, normalized_data_neg = normalized_2(channel_data_pos, channel_data_neg)
         heatmap_img = overlay_heatmap_on_image(normalized_data_pos, normalized_data_neg, images_wo_p[i], 0.5)
-        normalized_data = normalized_data_pos + normalized_data_neg
+        normalized_data = np.clip((normalized_data_pos + normalized_data_neg)*1.2, 0, 255)
         save_heatmap(output_dir, subfolder, f'IntegratedGradients_cnn{channel_name_pos}.png', normalized_data)
         heatmap_img.save(os.path.join(output_dir, subfolder,f'IntegratedGradients_{channel_name_pos}_heatmap.png'))
 
