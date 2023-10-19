@@ -53,11 +53,15 @@ Este repositorio consta de varios ficheros principales, cada uno con funciones e
   - Define las arquitecturas Panorama-CNN, Panorama-CNNEx, Resnet-CNN y Resnet-CNNEx.
   
 ### `explainability.py`
- - **Función**: Aplica GradfR, Integrated Gradients y Smoothgrad a las diferentes arquitecturas
- - **Resultado**: carpeta generada `heatmap[NombreArquitecura/` con los mapas de relevancia 2D asociados a cada ejemplo y mapas de calor (224x224) desplegados sobre imágenes del hueso.
- - **Uso**:
+- **Función**: Aplica GradfR, Integrated Gradients y Smoothgrad a las diferentes arquitecturas
+- **Resultado**: carpeta generada `heatmap[NombreArquitecura/` con los mapas de relevancia 2D asociados a cada ejemplo y mapas de calor (224x224) desplegados sobre imágenes del hueso.
+- **Uso**:
    ```bash
    explanaibility.py [PANORAMACNN:True/False] [Explainable:True/False] [entrenamiento]
 
 ### `functions.py`
- - **Función**: Funciones auxiliares para mostrar resultados, basadas en [functions.py](https://github.com/Alexmnzlms/Age_estimation_from_3D_models/blob/main/src/functions.py)
+- **Función**: Funciones auxiliares para mostrar resultados, basadas en [functions.py](https://github.com/Alexmnzlms/Age_estimation_from_3D_models/blob/main/src/functions.py)
+
+### `data_split.py`
+- **Función**: Se encarga de separar el conjunto de datos. Divide inicialmente los datos en un 90% para entrenamiento y 10% para pruebas. Luego, el conjunto de entrenamiento se subdivide nuevamente en 75% para entrenamiento y 25% para validación.
+- **Resultado**: train.csv, test.csv, trainval.csv, validation.csv y dataset.csv.
