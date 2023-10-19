@@ -180,17 +180,17 @@ class ViewSaliencyFunction(Function):
     def forward(ctx, x):
         B, _, N = x.shape
 
-        # Usamos broadcasting para calcular todas las distancias pairwise de una vez para todos los batches
+        # Broadcasting para calcular todas las distancias pairwise de una vez para todos los batches
         x_expanded = x.unsqueeze(2)  # Shape: [B, D, 1, N]
         x_tiled = x.unsqueeze(3)  # Shape: [B, D, N, 1]
         
-        # Pairwise differences
+        # Diferencias entre pares
         diffs = x_expanded - x_tiled  # Shape: [B, D, N, N]
         
-        # Euclidean distances along the feature dimension (dim=1)
+        # Distancia euclidea a lo largo de la dimensión 1 (dim=1)
         D = torch.norm(diffs, dim=1) # Shape: [B, N, N]
 
-        # No considerar la diagonal, la ponemos a 0
+        # No considerar la diagonal, se pone a 0
         diag_mask = torch.eye(N, device=x.device).unsqueeze(0).bool()
         D.masked_fill_(diag_mask, 0)
 
@@ -237,7 +237,7 @@ class SaliencyBasedPoolingFunction(Function):
 
     @staticmethod
     def forward(ctx, output_relu, output_vs):
-        # Asumiendo output_relu: (batch_size, feature_dim, N) y output_vs: (batch_size, N)
+        # output_relu: (batch_size, feature_dim, N) (batch_size, N)
         ctx.save_for_backward(output_relu, output_vs)
         
         # Suma ponderada a lo largo de la dimensión N
