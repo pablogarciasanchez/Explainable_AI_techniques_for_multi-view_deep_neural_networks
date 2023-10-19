@@ -63,5 +63,5 @@ Este repositorio consta de varios ficheros principales, cada uno con funciones e
 - **Función**: Funciones auxiliares para mostrar resultados, basadas en [functions.py](https://github.com/Alexmnzlms/Age_estimation_from_3D_models/blob/main/src/functions.py)
 
 ### `data_split.py`
-- **Función**: Se encarga de separar el conjunto de datos. Divide inicialmente los datos en un 90% para entrenamiento y 10% para pruebas. Luego, el conjunto de entrenamiento se subdivide nuevamente en 75% para entrenamiento y 25% para validación.
+- **Función**: Se encarga de separar el conjunto de datos. Divide inicialmente los datos en un 90% para entrenamiento y 10% para pruebas. Luego, el conjunto de entrenamiento se subdivide nuevamente en 75% para entrenamiento y 25% para validación. Basada en [data_split.py](https://github.com/Alexmnzlms/Age_estimation_from_3D_models/blob/main/src/data_split.py).
 - **Resultado**: train.csv, test.csv, trainval.csv, validation.csv y dataset.csv.
