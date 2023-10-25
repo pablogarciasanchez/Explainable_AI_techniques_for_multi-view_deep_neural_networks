@@ -1,38 +1,3 @@
-'''
-
-import pandas as pd
-import functions as fn
-
-# Cargar el dataframe
-df = pd.read_csv('pubis.csv')
-
-# Crear una copia del dataframe para evitar cambiar el original
-df_copy = df.copy()
-
-# Mezclar el dataframe antes de la división para evitar sesgos
-df_copy = df_copy.sample(frac=1, random_state=42)
-
-# Divide el conjunto de datos basado en los individuos en lugar de las observaciones individuales
-train_df, test_df = train_test_split(df_copy['Number'].drop_duplicates(), test_size=0.1, random_state=42)
-
-# Obtén las filas del conjunto de datos original que corresponden a los individuos en los conjuntos de entrenamiento y prueba
-train_df = df_copy[df_copy['Number'].isin(train_df)]
-test_df = df_copy[df_copy['Number'].isin(test_df)]
-
-# De lo anterior, dividir el conjunto de entrenamiento en entrenamiento (75%) y validación (25%)
-train_df, val_df = train_test_split(train_df, test_size=0.25, random_state=42)
-
-print(len(train_df))
-print(len(test_df))
-print(len(val_df))
-
-fn.calculate_weights(train_df)
-
-train_df.to_csv('./train.csv',index=False)
-test_df.to_csv('./test.csv',index=False)
-val_df.to_csv('./val.csv',index=False)
-'''
-
 import math
 import pandas as pd
 import functions as fn
