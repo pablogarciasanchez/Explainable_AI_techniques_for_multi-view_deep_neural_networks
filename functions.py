@@ -46,7 +46,6 @@ def load_image_normalize_rgb(images, dir, img_shape):
             g_channel_list.append(image[1])
             b_channel_list.append(image[2])
 
-    # Convertir listas en tensores para cálculos eficientes
     r_channel_tensor = torch.stack(r_channel_list)
     g_channel_tensor = torch.stack(g_channel_list)
     b_channel_tensor = torch.stack(b_channel_list)
@@ -60,9 +59,9 @@ def load_image_normalize_rgb(images, dir, img_shape):
     g_std = torch.std(g_channel_tensor).item()
     b_std = torch.std(b_channel_tensor).item()
 
-    print(r_mean, r_std)
-    print(g_mean, g_std)
-    print(b_mean, b_std)
+    #print(r_mean, r_std)
+    #print(g_mean, g_std)
+    #print(b_mean, b_std)
 
     normalize = transforms.Normalize([r_mean, g_mean, b_mean], [r_std, g_std, b_std])
 
@@ -76,9 +75,9 @@ def load_image_normalize_rgb(images, dir, img_shape):
 
     normalized_images_tensor = torch.stack(normalized_images)
 
-    print('Media final', torch.mean(normalized_images_tensor).item(), torch.std(normalized_images_tensor).item())
+    #print('Media final', torch.mean(normalized_images_tensor).item(), torch.std(normalized_images_tensor).item())
 
-    return [r_mean, r_std, g_mean, g_std, b_mean, b_std]
+    return [r_mean, r_std, g_mean], [g_std, b_mean, b_std]
 
 
 def get_images_list(dataframe, colormode, augment=True, weights=True):
