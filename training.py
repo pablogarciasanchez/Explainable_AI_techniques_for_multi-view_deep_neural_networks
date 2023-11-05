@@ -13,6 +13,7 @@ import functions as fn
 import sys
 import pickle
 import datetime
+import os
 sys.stdout.reconfigure(encoding='utf-8')
 
 
@@ -246,6 +247,9 @@ def main(PANORAMACNN, Explainable):
         path = './entrenamientos/PanoramaCNNEx/' if PANORAMACNN else './entrenamientos/ResnetCNNEx/'
     else:
         path = './entrenamientos/PanoramaCNN/' if PANORAMACNN else './entrenamientos/ResnetCNN/'
+    
+    if not os.path.exists(path):
+        os.makedirs(path)
 
     # Obtener la fecha y hora actuales
     current_datetime = datetime.datetime.now()
