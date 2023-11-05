@@ -264,7 +264,7 @@ def main(PANORAMACNN, Explainable):
             model, criterion, optimizer = create_model(device, PANORAMACNN, path, lr)
         
         dataloaders = create_dataloaders({'train': 32, 'val': 32, 'test': 1}, mean_train, std_train)
-        model = train_model(model, dataloaders, criterion, optimizer, device, path, num_epochs=2, fine_tune_epochs = 0, lr = lr)
+        model = train_model(model, dataloaders, criterion, optimizer, device, path, num_epochs=100, fine_tune_epochs = 0, lr = lr)
     else:
         lr = 0.001
         if(Explainable):
