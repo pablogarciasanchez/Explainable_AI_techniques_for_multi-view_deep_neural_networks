@@ -343,7 +343,7 @@ new_df = df[['Sample', 'Edad']].copy()
 predicted_ages_dict = {}
 saliency_values_dict = {}
 
-for subfolder in image_dir[0:1]:
+for subfolder in image_dir:
 
     print(f"Procesando {subfolder}...")
 
