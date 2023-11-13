@@ -49,7 +49,7 @@ Este repositorio consta de varios ficheros principales, cada uno con funciones e
 ### `utils.py`
 - **Función**:
   - Define el Dataset: Permite cargar las imágenes en memoria normalizadas para que la media sea 0 y la desviación estándar 1
-  - Define las capas PS y VS: Define las capas VS y PS, basado en: R. Song, Y. Liu, and P. L. Rosin. "[Mesh Saliency via Weakly Supervised Classification-for-Saliency CNN](https://doi.org/10.1109/TVCG.2019.2928794)." *IEEE Transactions on Visualization and Computer Graphics*, vol. 27, no. 1, pp. 151-164, 1 Jan. 2021.
+  - Define las capas SP y VS: Define las capas VS y SP, basado en: R. Song, Y. Liu, and P. L. Rosin. "[Mesh Saliency via Weakly Supervised Classification-for-Saliency CNN](https://doi.org/10.1109/TVCG.2019.2928794)." *IEEE Transactions on Visualization and Computer Graphics*, vol. 27, no. 1, pp. 151-164, 1 Jan. 2021.
   - Define las arquitecturas Panorama-CNN, Panorama-CNNEx, Resnet-CNN y Resnet-CNNEx.
   
 ### `explainability.py`
